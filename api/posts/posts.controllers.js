@@ -1,4 +1,4 @@
-const Post = require('../../models/Post');
+const Post = require("../../models/Post");
 
 exports.fetchPost = async (postId, next) => {
   try {
@@ -11,7 +11,12 @@ exports.fetchPost = async (postId, next) => {
 
 exports.postsCreate = async (req, res) => {
   try {
-    const newPost = await Post.create(req.body);
+    const { authorId } = req.params; // introduce the author id
+    const postData = { ...req.body, author: authorId }; // here we added the spreader from the post model with the author Id
+    const newPost = await Post.create(postData); //we changed the req.body to postData from above
+    const author = await Author.findByIdAndUpdate(authorId, {
+      $push: { Posts: newPost._id },
+    });
     res.status(201).json(newPost);
   } catch (error) {
     next(error);
@@ -36,9 +41,14 @@ exports.postsUpdate = async (req, res) => {
   }
 };
 
-exports.postsGet = async (req, res) => {
+exports.postsGet = async (req, res, next) => {
   try {
-    const posts = await Post.find();
+    // here we added populate to display the authors list of posts and name from the authors model
+    const posts = await Post.find({}, "-createdAt -updatedAt").populate(
+      "Posts",
+      "name"
+    );
+
     res.json(posts);
   } catch (error) {
     next(error);
