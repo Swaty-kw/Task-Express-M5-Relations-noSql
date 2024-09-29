@@ -19,4 +19,4 @@ const getAllauthors = async (req, res, next) => {
   };
 };
 // exports
-module.exports = { getAllauthors, createAuthor };
+module.exports = { getAllauthors,  };

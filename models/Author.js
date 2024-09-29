@@ -5,6 +5,6 @@ const AuthorSchema = new Schema({
   Posts: [{ type: Schema.Types.ObjectId, ref: "Post" }], // array becuase author has mulitple posts
 });
 
-const Author = model("Author,AuthorSchema");
+const Author = model("Author", AuthorSchema);
 
 module.exports = Author;

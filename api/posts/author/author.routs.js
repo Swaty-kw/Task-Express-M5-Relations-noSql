@@ -4,7 +4,7 @@ const { getAllauthors, createAuthor } = require("./author.controller");
 const authorRouter = exprees.Router;
 // Routs
 authorRouter.get("./", getAllauthors);
-authorRouter.Post("./", createAuthor);
+// authorRouter.Post("./", createAuthor);
 
 // exports
 module.exports = authorRouter;

@@ -1,4 +1,5 @@
 const Post = require("../../models/Post");
+const Tag = require("../../models/Tag");
 
 exports.fetchPost = async (postId, next) => {
   try {
@@ -34,7 +35,17 @@ exports.postsDelete = async (req, res) => {
 
 exports.postsUpdate = async (req, res) => {
   try {
-    await Post.findByIdAndUpdate(req.post.id, req.body);
+    const { postId } = req.params;
+    const updatedTags = await Tag.updateMany(
+      { _id: req.body.tags },
+      {
+        $push: { posts: postId },
+      }
+    );
+
+    await Post.findByIdAndUpdate(req.post.id, {
+      $push: { tags: { $each: req.body.tags } },
+    });
     res.status(204).end();
   } catch (error) {
     next(error);
@@ -44,10 +55,7 @@ exports.postsUpdate = async (req, res) => {
 exports.postsGet = async (req, res, next) => {
   try {
     // here we added populate to display the authors list of posts and name from the authors model
-    const posts = await Post.find({}, "-createdAt -updatedAt").populate(
-      "Posts",
-      "name"
-    );
+    const posts = await Post.find({}, "-createdAt -updatedAt").populate("tags");
 
     res.json(posts);
   } catch (error) {
